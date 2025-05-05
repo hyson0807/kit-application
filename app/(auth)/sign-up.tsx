@@ -88,8 +88,9 @@ export default function SignUpScreen() {
                 <TextInput
                     autoCapitalize="none"
                     value={username}
-                    placeholder="name"
+                    placeholder="username"
                     onChangeText={(text) => setUsername(text)}
+                    placeholderTextColor="gray"
                 />
 
 
@@ -98,12 +99,16 @@ export default function SignUpScreen() {
                     value={emailAddress}
                     placeholder="Enter email"
                     onChangeText={(email) => setEmailAddress(email)}
+                    placeholderTextColor="gray"
+
                 />
                 <TextInput
                     value={password}
                     placeholder="Enter password"
                     secureTextEntry={true}
                     onChangeText={(password) => setPassword(password)}
+                    placeholderTextColor="gray"
+
                 />
                 <TouchableOpacity onPress={onSignUpPress}>
                     <Text>Continue</Text>

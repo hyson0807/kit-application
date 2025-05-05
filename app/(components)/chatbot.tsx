@@ -1,21 +1,23 @@
 import {View, Text, TextInput, TouchableOpacity, FlatList, KeyboardAvoidingView, Platform} from 'react-native'
-import React, {useEffect, useState} from 'react'
+import React, {useState} from 'react'
 import {AntDesign} from "@expo/vector-icons";
 import {router} from "expo-router";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import {api} from "@/convex/_generated/api";
-import { useAuth } from "@clerk/clerk-expo";
 
 
 const Chatbot = () => {
-    const { userId, isSignedIn, isLoaded } = useAuth();
-    const sendQuestion = useMutation(api.chat.sendQuestion);
+    const sendQuestion = useMutation(api.chat.sendQuestion); //질문 db 저장
+    const user = useQuery(api.users.getUserInfo); //유저정보 (clerk_id, username)
+    const question = useQuery(api.chat.getQuestion); // 질문 querying
     const [newQuestion, setNewQuestion] = useState("");
 
-    useEffect(() => {
-        if(!isSignedIn || !userId) router.replace("/sign-in");
-    }, [isSignedIn, userId] );
-    if (!isLoaded) return null;
+
+    if (!user || !question) {
+        return (
+            <View className="flex-1 items-center justify-center"><Text>Loading</Text></View>
+        )
+    }
 
 
 
@@ -35,7 +37,7 @@ const Chatbot = () => {
                 {/* 헤더 */}
                 <View className='flex flex-row items-center justify-between w-full h-10 bg-slate-400 px-3' >
                     <AntDesign name="left" size={24} color="black" onPress={()=> router.push("/forum")}/>
-                    <Text>chatBot</Text>
+                    <Text>{user.username}</Text>
                     <Text>Profile</Text>
                 </View>
                 {/* 채팅 메세지 화면 */}
@@ -53,7 +55,7 @@ const Chatbot = () => {
                         className="flex items-center justify-center w-10 h-10 rounded-full border-2"
                         onPress={() => {
                             if (!newQuestion.trim()) return; // 빈 문자열 방지
-                            sendQuestion({user: userId!, body: newQuestion});
+                            sendQuestion({user: user.userId, body: newQuestion});
                             setNewQuestion("");
                         }}
                     >
@@ -67,11 +69,11 @@ const Chatbot = () => {
     function ChatContainer() {
         return (
             <FlatList
-                data={data}
-                keyExtractor={(item) => item.id} // convex에서 가져온 데이터라면 _id 사용
+                data={question}
+                keyExtractor={(item) => item._id} // convex에서 가져온 데이터라면 _id 사용
                 renderItem={({ item }) => (
                     <View className="items-end pr-3">
-                        <Text>{item.text}</Text>
+                        <Text>{item.content}</Text>
                     </View>
                 )}
                 inverted

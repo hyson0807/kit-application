@@ -1,5 +1,4 @@
 import {View, Text, TouchableOpacity} from 'react-native'
-import React, {useEffect, useState} from 'react'
 import {router} from "expo-router";
 
 const Forum = () => {

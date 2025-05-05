@@ -2,8 +2,11 @@ import {View, Text, TouchableOpacity} from 'react-native'
 import React from 'react'
 import {useClerk} from "@clerk/clerk-expo";
 import {router} from "expo-router";
+import {useQuery} from "convex/react";
+import {api} from "@/convex/_generated/api";
 
 const More = () => {
+    const user = useQuery(api.users.getUserInfo); //유저정보 (clerk_id, username)
     const { signOut } = useClerk()
     const handleSignOut = async () => {
         try {
@@ -17,10 +20,18 @@ const More = () => {
         }
     }
 
+    if (!user) {
+        return (
+            <View className="flex-1 items-center justify-center"><Text>Loading</Text></View>
+        )
+    }
+
     return (
 
         <View className="flex-1 justify-center items-center">
-
+            <View>
+                <Text>user : {user.username}</Text>
+            </View>
             <TouchableOpacity onPress={handleSignOut}>
                 <Text>Sign out</Text>
             </TouchableOpacity>
