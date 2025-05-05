@@ -6,5 +6,15 @@ export default defineSchema({
         username: v.string(),
         email: v.string(),
         clerkId: v.string(),
-    }).index("by_clerk_id", ["clerkId"])
+    }).index("by_clerk_id", ["clerkId"]),
+
+    questions: defineTable({
+        clerkId: v.string(),
+        content: v.string(),
+    }).index("by_clerk_id", ["clerkId"]),
+
+    answers: defineTable({
+        clerkId: v.string(),
+        content: v.string(),
+    })
 });
