@@ -9,6 +9,7 @@ export default function SignUpScreen() {
 
     const [emailAddress, setEmailAddress] = React.useState('')
     const [password, setPassword] = React.useState('')
+    const [username, setUsername] = React.useState('')
     const [pendingVerification, setPendingVerification] = React.useState(false)
     const [code, setCode] = React.useState('')
 
@@ -19,6 +20,7 @@ export default function SignUpScreen() {
         // Start sign-up process using email and password provided
         try {
             await signUp.create({
+                username,
                 emailAddress,
                 password,
             })
@@ -83,6 +85,14 @@ export default function SignUpScreen() {
         <View>
             <>
                 <Text>Sign up</Text>
+                <TextInput
+                    autoCapitalize="none"
+                    value={username}
+                    placeholder="name"
+                    onChangeText={(text) => setUsername(text)}
+                />
+
+
                 <TextInput
                     autoCapitalize="none"
                     value={emailAddress}

@@ -4,7 +4,7 @@ import React from 'react'
 const Forum = () => {
     return (
         <View>
-            <Text>Forum</Text>
+            <Text>Forum123</Text>
         </View>
     )
 }
