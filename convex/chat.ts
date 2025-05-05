@@ -1,23 +1,22 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
-import { api, internal } from "./_generated/api";
+import { internal } from "./_generated/api";
 
 
 export const sendQuestion = mutation({
     args: {
-        user: v.string(),
-        body: v.string(),
+        clerkId: v.string(),
+        question: v.string(),
     },
     handler: async (ctx, args) => {
-
         await ctx.db.insert("questions", {
-            clerkId: args.user,
-            content: args.body,
+            clerkId: args.clerkId,
+            content: args.question,
         });
 
         await ctx.scheduler.runAfter(0, internal.openai.generateAIResponse, {
-            prompt: args.body,
-            clerkId: args.user,
+            clerkId: args.clerkId,
+            question: args.question,
         });
     },
 });
@@ -36,3 +35,17 @@ export const getQuestion = query({
         return question;
     },
 });
+
+export const getAnswer = query({
+    args: {},
+    handler: async (ctx) => {
+        const identity = await ctx.auth.getUserIdentity();
+        if(!identity) throw new Error("Not authenticated");
+
+        const answer = await ctx.db
+            .query("answers")
+            .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
+            .take(50);
+        return answer;
+    }
+})

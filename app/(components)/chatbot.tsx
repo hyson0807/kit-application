@@ -10,6 +10,7 @@ const Chatbot = () => {
     const sendQuestion = useMutation(api.chat.sendQuestion); //질문 db 저장
     const user = useQuery(api.users.getUserInfo); //유저정보 (clerk_id, username)
     const question = useQuery(api.chat.getQuestion); // 질문 querying
+    const answer = useQuery(api.chat.getQuestion);
     const [newQuestion, setNewQuestion] = useState("");
 
 
@@ -19,14 +20,6 @@ const Chatbot = () => {
         )
     }
 
-
-
-
-    const data = [
-        {id: '1', text: "123"},
-        {id: '2', text: "123"},
-        {id: '3', text: "123"},
-    ]
 
     return (
         <KeyboardAvoidingView
@@ -55,7 +48,7 @@ const Chatbot = () => {
                         className="flex items-center justify-center w-10 h-10 rounded-full border-2"
                         onPress={() => {
                             if (!newQuestion.trim()) return; // 빈 문자열 방지
-                            sendQuestion({user: user.userId, body: newQuestion});
+                            sendQuestion({clerkId: user.userId, question: newQuestion});
                             setNewQuestion("");
                         }}
                     >
@@ -73,7 +66,10 @@ const Chatbot = () => {
                 keyExtractor={(item) => item._id} // convex에서 가져온 데이터라면 _id 사용
                 renderItem={({ item }) => (
                     <View className="items-end pr-3">
-                        <Text>{item.content}</Text>
+                        <View>
+                            <Text className="text-xl border-2 rounded-md">{item.content}</Text>
+                            <Text className="text-sm">{user!.username}</Text>
+                        </View>
                     </View>
                 )}
                 inverted

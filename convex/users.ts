@@ -33,7 +33,6 @@ export const getUserInfo = query(async (ctx) => {
         .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
         .first();
 
-
     if (!user) {
         throw new Error("User not found in database123123123");
     }

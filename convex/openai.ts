@@ -5,11 +5,11 @@ import { api } from "./_generated/api";
 // ✅ 내부 액션
 export const generateAIResponse = internalAction({
     args: {
-        prompt: v.string(),
+        question: v.string(),
         clerkId: v.string()
     },
     handler: async (ctx, args) => {
-        const question = args.prompt;
+        const question = args.question;
 
         const OPENAI_API_KEY = process.env.OPENAI_API_KEY || '';
         const PINECONE_API_KEY = process.env.PINECONE_API_KEY || '';
@@ -28,9 +28,8 @@ export const generateAIResponse = internalAction({
             console.log('GPT 답변:', answer);
 
             await ctx.scheduler.runAfter(0, api.openai.sendAIAnswer, {
-                body: answer,
+                answer: answer,
                 clerkId: args.clerkId
-
             });
 
         } catch (err) {
@@ -39,7 +38,7 @@ export const generateAIResponse = internalAction({
     },
 });
 
-// ✅ 일반 함수는 키를 인자로 받음
+
 const getEmbedding = async (question: string, apiKey: string) => {
     const response = await fetch("https://api.openai.com/v1/embeddings", {
         method: "POST",
@@ -105,14 +104,13 @@ const generateAnswer = async (question: string, context: string, apiKey: string)
 // ✅ 답변 저장
 export const sendAIAnswer = mutation({
     args: {
-        body: v.string(),
+        answer: v.string(),
         clerkId: v.string(),
     },
     handler: async (ctx, args) => {
-
         await ctx.db.insert("answers", {
             clerkId: args.clerkId,
-            content: args.body,
+            content: args.answer,
         });
     },
 });
