@@ -1,12 +1,13 @@
-import { internalAction, mutation } from "./_generated/server";
+import {internalAction, mutation} from "./_generated/server";
 import { v } from "convex/values";
-import { api } from "./_generated/api";
+import {api, internal} from "./_generated/api";
 
 // ✅ 내부 액션
 export const generateAIResponse = internalAction({
     args: {
         question: v.string(),
-        clerkId: v.string()
+        clerkId: v.string(),
+        questionId: v.id("questions"),
     },
     handler: async (ctx, args) => {
         const question = args.question;
@@ -27,14 +28,17 @@ export const generateAIResponse = internalAction({
             const answer = await generateAnswer(question, context, OPENAI_API_KEY);
             console.log('GPT 답변:', answer);
 
-            await ctx.scheduler.runAfter(0, api.openai.sendAIAnswer, {
+            await ctx.runMutation(api.openai.importAnswer, {
                 answer: answer,
-                clerkId: args.clerkId
-            });
+                questionId: args.questionId
+
+            })
 
         } catch (err) {
             console.error("generateAIResponse 오류:", err);
         }
+
+
     },
 });
 
@@ -101,18 +105,16 @@ const generateAnswer = async (question: string, context: string, apiKey: string)
     return resData.choices[0].message.content;
 };
 
-// ✅ 답변 저장
-export const sendAIAnswer = mutation({
+export const importAnswer = mutation({
     args: {
         answer: v.string(),
-        clerkId: v.string(),
+        questionId: v.id("questions"),
     },
     handler: async (ctx, args) => {
-        await ctx.db.insert("answers", {
-            clerkId: args.clerkId,
-            content: args.answer,
-        });
-    },
-});
+        await ctx.db.patch(args.questionId, {
+            answer: args.answer
+        })
+    }
+})
 
 

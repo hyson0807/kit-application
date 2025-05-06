@@ -9,7 +9,7 @@ export const sendQuestion = mutation({
         question: v.string(),
     },
     handler: async (ctx, args) => {
-        await ctx.db.insert("questions", {
+        const questionId = await ctx.db.insert("questions", {
             clerkId: args.clerkId,
             content: args.question,
         });
@@ -17,6 +17,7 @@ export const sendQuestion = mutation({
         await ctx.scheduler.runAfter(0, internal.openai.generateAIResponse, {
             clerkId: args.clerkId,
             question: args.question,
+            questionId,
         });
     },
 });
@@ -36,16 +37,3 @@ export const getQuestion = query({
     },
 });
 
-export const getAnswer = query({
-    args: {},
-    handler: async (ctx) => {
-        const identity = await ctx.auth.getUserIdentity();
-        if(!identity) throw new Error("Not authenticated");
-
-        const answer = await ctx.db
-            .query("answers")
-            .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
-            .take(50);
-        return answer;
-    }
-})

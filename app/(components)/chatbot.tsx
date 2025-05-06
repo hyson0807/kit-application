@@ -10,7 +10,6 @@ const Chatbot = () => {
     const sendQuestion = useMutation(api.chat.sendQuestion); //질문 db 저장
     const user = useQuery(api.users.getUserInfo); //유저정보 (clerk_id, username)
     const question = useQuery(api.chat.getQuestion); // 질문 querying
-    const answer = useQuery(api.chat.getQuestion);
     const [newQuestion, setNewQuestion] = useState("");
 
 
@@ -68,6 +67,7 @@ const Chatbot = () => {
                     <View className="items-end pr-3">
                         <View>
                             <Text className="text-xl border-2 rounded-md">{item.content}</Text>
+                            <Text className="text-xl border-2 rounded-md">{item.answer ?? "답변 생성중..."}</Text>
                             <Text className="text-sm">{user!.username}</Text>
                         </View>
                     </View>
