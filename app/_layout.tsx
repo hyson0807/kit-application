@@ -11,7 +11,7 @@ if (!PUBLISHABLE_KEY) {
     throw new Error('Missing Publishable Key')
 }
 
-const convex = new ConvexReactClient(process.env.EXPO_PUBLIC_CONVEX_URL! as string)
+const convex = new ConvexReactClient(process.env.EXPO_PUBLIC_CONVEX_URL! as string);
 
 export default function RootLayout() {
     return (
