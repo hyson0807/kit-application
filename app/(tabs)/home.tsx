@@ -1,7 +1,6 @@
 import {View, Text, FlatList, Image, TouchableOpacity} from 'react-native'
 import React from 'react'
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import {router} from "expo-router";
 
 const data = [
     {id: '1', component: <FeaturedKit/>},

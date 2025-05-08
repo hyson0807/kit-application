@@ -1,5 +1,5 @@
 import {View, Text, TouchableOpacity} from 'react-native'
-import React from 'react'
+import React, {useEffect} from 'react'
 import {useClerk} from "@clerk/clerk-expo";
 import {router} from "expo-router";
 import {useQuery} from "convex/react";
@@ -20,10 +20,21 @@ const More = () => {
         }
     }
 
-    if (!user) {
+    // 🟨 유저가 없고 에러로 판단되는 경우 회원가입 페이지로 이동
+    useEffect(() => {
+        if (user === undefined) return; // 아직 로딩 중
+        if (user === null) {
+            // 에러로 인해 null 반환된 경우 → 회원가입 화면으로 이동
+            router.replace('/sign-in');
+        }
+    }, [user]);
+
+    if (user === undefined) {
         return (
-            <View className="flex-1 items-center justify-center"><Text>Loading</Text></View>
-        )
+            <View className="flex-1 items-center justify-center">
+                <Text>Loading...</Text>
+            </View>
+        );
     }
 
     return (
